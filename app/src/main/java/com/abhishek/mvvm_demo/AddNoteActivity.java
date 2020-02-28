@@ -42,7 +42,7 @@ public class AddNoteActivity extends AppCompatActivity {
         numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(10);
 
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+       // getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
         setTitle("Add Note");
 
 
@@ -61,7 +61,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
         }
 
-        Intent data = new Intent();
+        Intent data = new Intent(AddNoteActivity.this,MainActivity.class);
         data.putExtra(EXTRA_TITLE,title);
         data.putExtra(EXTRA_DESCRIPTION,description);
         data.putExtra(EXTRA_PRIORITY,priority);

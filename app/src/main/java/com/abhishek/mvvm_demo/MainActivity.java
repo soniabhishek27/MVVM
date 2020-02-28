@@ -1,15 +1,20 @@
 package com.abhishek.mvvm_demo;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
  TextView textView;
  FloatingActionButton buttonAddNote;
 
+ String Color = "#fff";
+
 
 
     @Override
@@ -34,14 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
         buttonAddNote = findViewById(R.id.button_add_note);
 
+
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                 Intent intent = new Intent(MainActivity.this,AddNoteActivity.class);
                 startActivityForResult(intent,ADD_NOTE_REQUEST);
-
-
             }
         });
 
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
 
      noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
+
      noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
          @Override
          public void onChanged(List<Note> notes)
@@ -64,7 +71,28 @@ public class MainActivity extends AppCompatActivity {
          }
      });
 
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+             ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT)
+     {
+         @Override
+         // on move is for drag and drop functionality
+         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+             return false;
+         }
+
+         @Override
+         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+         {
+
+             noteViewModel.delete(noteAdapter.getNotePosition(viewHolder.getAdapterPosition()));
+             Toast.makeText(MainActivity.this,"Deleted",Toast.LENGTH_SHORT).show();
+         }
+     }).attachToRecyclerView(recyclerView);
+
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -87,7 +115,35 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
         }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu_deleteall,menu);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case R.id.delete_all_notes:
+                noteViewModel.deleteAllNotes();
+
+                Toast.makeText(MainActivity.this,"All Notes Deleted",Toast.LENGTH_SHORT).show();
+                return true;
+
+            default:  return super.onOptionsItemSelected(item);
+        }
+
+
+
+    }
+}
 
 

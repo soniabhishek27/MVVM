@@ -50,6 +50,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
 
     }
 
+    public Note getNotePosition(int position)
+    {
+        return notes.get(position);
+
+    }
+
 
 
     //inner class
